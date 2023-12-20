@@ -1,7 +1,9 @@
+import classes from "./component.module.css"
+
 
 function Component() {
     return (
-        <div>
+        <div className={classes.com}>
             Component
         </div>
     );
