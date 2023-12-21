@@ -1,12 +1,18 @@
 import './App.css';
 import List from './components/List/List';
 import Modal from './components/Modal/Modal';
+import input from "./components/Input/Input";
 import {useState} from "react"
 
 function App() {
   let isShown = false
   const [show, setShow] = useState(false)
   const [newTask, setNewTask] = useState("")
+  const [query, setQuery] = useState('')
+  const [state, setState] = useState({
+    query: '',
+    list: []
+  })
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -46,11 +52,27 @@ function App() {
   }
 
   const handleDelete = (id) => {
-    console.log(id);
+    setTasks(tasks.filter((task) => task.id !== id))
+  }
+
+  const handleChange = (e) => {
+    const results = tasks.filter((task) => {
+      if (e.target.value === "") return tasks
+      return task.title.toLowerCase().includes(e.target.value.toLowerCase())
+    })
+    setState({
+      query: e.target.value,
+      list: results
+    })
   }
 
   return (
     <div className="App">
+      <input
+        type="search"
+        value={state.query}
+        onChange={handleChange}
+      />
       <button onClick={handleOpen}>Открыть</button>
       {show && 
         <Modal 
@@ -59,7 +81,15 @@ function App() {
           handleAdd={handleAdd}
         />
       }
-      <List tasks={tasks} handleDelete={handleDelete} />
+      {state.query ? (
+        state.list.length > 0 ? (
+          <List tasks={state.list} handleDelete={handleDelete} />
+        ) : (
+          <p>Соответствующих результатов не найдено.</p>
+        )
+      ) : (
+        <List tasks={tasks} handleDelete={handleDelete} />
+      )}
     </div>
   );
 }
