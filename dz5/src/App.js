@@ -68,7 +68,7 @@ function App() {
     setTasks([])
   }
 
-  const handleFilterChange = (event) => {
+  const handleSelect = (event) => {
     setFilterOption(event.target.value);
   };
 
@@ -84,7 +84,7 @@ function App() {
 
   return (
     <div className="App">
-      <select value={filterOption} onChange={handleFilterChange}>
+      <select value={filterOption} onChange={handleSelect}>
         <option value="all">Все таски</option>
         <option value="completed">Выполненные</option>
         <option value="notCompleted">Не Выполненные</option>
