@@ -2,6 +2,7 @@ import './App.css';
 import List from './components/List/List';
 import Modal from './components/Modal/Modal';
 import {useEffect, useState} from "react"
+import Pagination from './components/Pagination/Pagination';
 
 function App() {
   let isShown = false
@@ -49,19 +50,45 @@ function App() {
     setTasks([...tasks])
   }
 
-  useEffect(() => {
-    const myLocalList = JSON.parse(localStorage.getItem('tasks'))
-    if (myLocalList === null) {
-      return localStorage.setItem('tasks', JSON.stringify(tasks))
-    }
-    if (myLocalList.length !== 0) {
-      setTasks(myLocalList)
-    }
-  }, [])
+  const BASE_URL = 'https://jsonplaceholder.typicode.com/'
+
+  const getTodos = async (endpoint) => {
+    const data = await fetch(BASE_URL + endpoint)
+    const todos = await (data.json())
+    setTasks(todos)
+    console.log(todos);
+    return todos 
+  }
+
+  const limit = 10
+  const [offset, setOffset] = useState(0)
+  const page = Math.floor(offset/limit) + 1
+
+  const handlePrev = () => {
+    setOffset(prev => prev - limit)
+  }
+
+  const handleNext = () => {
+    setOffset(prev => prev + limit)
+  }
 
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks))
-  }, [tasks])
+    getTodos(`todos?_limit=${limit}&_start=${offset}`)
+  }, [offset])
+
+  // useEffect(() => {
+  //   const myLocalList = JSON.parse(localStorage.getItem('tasks'))
+  //   if (myLocalList === null) {
+  //     return localStorage.setItem('tasks', JSON.stringify(tasks))
+  //   }
+  //   if (myLocalList.length !== 0) {
+  //     setTasks(myLocalList)
+  //   }
+  // }, [])
+
+  // useEffect(() => {
+  //   localStorage.setItem('tasks', JSON.stringify(tasks))
+  // }, [tasks])
 
   return (
     <div className="App">
@@ -79,6 +106,7 @@ function App() {
         handleEdit = {handleEdit}
         handleDone = {handleDone}
       />
+      <Pagination page={page} handlePrev={handlePrev} handleNext={handleNext}/>
     </div>
   );
 }
